@@ -1,0 +1,6 @@
+dependencies {
+    api(project(":shore-rsocket-common"))
+    api "org.springframework.boot:spring-boot-starter-rsocket:$springBootVersion"
+    api "org.springframework.boot:spring-boot-starter-actuator:$springBootVersion"
+    implementation "org.springframework.cloud:spring-cloud-commons:$springCloudVersion"
+}

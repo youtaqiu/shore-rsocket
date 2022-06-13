@@ -1,0 +1,3 @@
+rootProject.name = "shore-rsocket"
+include "shore-rsocket-common"
+include "shore-rsocket-lb"

@@ -1,0 +1,58 @@
+ext {
+    javaVersion = JavaVersion.VERSION_17
+    lombokVersion = "1.18.22"
+    springVersion = "5.3.20"
+    springBootVersion = "2.7.0"
+    springNativeVersion = "0.12.0"
+    springCloudVersion = "3.1.3"
+}
+
+configure(subprojects) {
+    version = VERSION
+    group = GROUP
+    apply plugin: "java-library"
+    apply plugin: 'signing'
+    apply plugin: 'maven-publish'
+    sourceCompatibility = "$javaVersion"
+    targetCompatibility = "$javaVersion"
+
+    task publishSnapshot(type: GradleBuild) {
+        if (VERSION.endsWith('SNAPSHOT')) {
+            tasks = ['clean', 'build', 'publish']
+        }
+    }
+
+    apply from: "${rootProject.projectDir}/.publish/publish-jar.gradle"
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    }
+
+    repositories {
+        mavenLocal()
+        maven { url 'https://maven.aliyun.com/repository/public/' }
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
+        compileOnly "org.projectlombok:lombok:$lombokVersion"
+        annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+        testAnnotationProcessor "org.projectlombok:lombok:$lombokVersion"
+        testCompileOnly "org.projectlombok:lombok:$lombokVersion"
+    }
+
+    compileJava.dependsOn(processResources)
+
+    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+}
+
+
+def getRepositoryUsername() {
+    return System.getenv('REPO_USER_NAME') ?: REPO_USER_NAME
+}
+
+def getRepositoryPassword() {
+    return System.getenv('REPO_PASS_WORD') ?: REPO_PASS_WORD
+}
